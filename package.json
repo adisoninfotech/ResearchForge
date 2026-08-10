@@ -1,0 +1,43 @@
+{
+  "name": "researchforge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ResearchForge monorepo — evidence-grounded research manuscript platform",
+  "workspaces": [
+    "apps/web",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=@researchforge/web",
+    "dev:web": "npm run dev --workspace=@researchforge/web",
+    "dev:api": "npm run dev --prefix apps/api",
+    "build": "npm run build --workspaces --if-present",
+    "build:web": "npm run build --workspace=@researchforge/web",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:web": "npm run lint --workspace=@researchforge/web",
+    "lint:api": "npm run lint --prefix apps/api",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css,yml,yaml}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css,yml,yaml}\"",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present && npm run test --prefix apps/api",
+    "test:web": "npm run test --workspace=@researchforge/web",
+    "test:api": "npm run test --prefix apps/api",
+    "test:e2e": "npm run test:e2e --workspace=@researchforge/web",
+    "db:migrate": "npm run db:migrate --prefix apps/api",
+    "db:revision": "npm run db:revision --prefix apps/api",
+    "docker:up": "docker compose -f infra/docker/docker-compose.yml up -d --build",
+    "docker:down": "docker compose -f infra/docker/docker-compose.yml down",
+    "docker:logs": "docker compose -f infra/docker/docker-compose.yml logs -f",
+    "secrets": "node scripts/generate-secrets.mjs",
+    "prepare": "husky || true"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.2"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "npm@11.6.2"
+}

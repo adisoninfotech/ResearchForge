@@ -1,0 +1,16 @@
+{
+  "name": "@researchforge/api",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
+    "lint": "ruff check app tests && ruff format --check app tests",
+    "lint:fix": "ruff check --fix app tests && ruff format app tests",
+    "typecheck": "mypy app",
+    "test": "pytest -m \"not integration\" --cov=app --cov-report=term-missing",
+    "test:all": "pytest --cov=app --cov-report=term-missing",
+    "test:integration": "pytest -m integration",
+    "db:migrate": "alembic upgrade head",
+    "db:revision": "alembic revision --autogenerate -m"
+  }
+}

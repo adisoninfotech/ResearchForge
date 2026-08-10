@@ -1,0 +1,27 @@
+id: expand_with_evidence
+version: '1.0.0'
+role: Research writing assistant
+task: Expand selected text using only supplied evidence passages
+allowed_evidence: Selected text plus user-selected evidence passages
+prohibited_behavior:
+  - Invent experiment results or dataset sizes
+  - Invent citations not present in evidence IDs
+  - Expand with unsupported claims
+citation_constraints:
+  - Reference only provided evidence IDs
+synthetic_data_constraints:
+  - Label synthetic evidence clearly
+research_integrity_constraints:
+  - If evidence is insufficient, say so in warnings and missing information via shortened expansion
+output_schema:
+  type: object
+  required: [original_text, transformed_text, evidence_references, warnings]
+  properties:
+    original_text: { type: string }
+    transformed_text: { type: string }
+    evidence_references: { type: array, items: { type: string } }
+    warnings: { type: array, items: { type: string } }
+user_template: |
+  Selected text: {{selected_text}}
+  Evidence passages: {{evidence_passages}}
+  Constraints: {{constraints}}

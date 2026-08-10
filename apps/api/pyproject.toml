@@ -1,0 +1,125 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "researchforge-api"
+version = "0.1.0"
+description = "ResearchForge FastAPI backend"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "fastapi>=0.115.0",
+  "uvicorn[standard]>=0.34.0",
+  "pydantic>=2.10.0",
+  "pydantic-settings>=2.7.0",
+  "sqlalchemy[asyncio]>=2.0.36",
+  "asyncpg>=0.30.0",
+  "psycopg[binary]>=3.2.0",
+  "alembic>=1.14.0",
+  "redis>=5.2.0",
+  "celery[redis]>=5.4.0",
+  "httpx>=0.28.0",
+  "python-multipart>=0.0.20",
+  "argon2-cffi>=23.1.0",
+  "PyJWT>=2.10.0",
+  "email-validator>=2.2.0",
+  "boto3>=1.36.0",
+  "structlog>=24.4.0",
+  "asgi-correlation-id>=4.3.0",
+  "PyYAML>=6.0.2",
+  "pypdf>=5.1.0",
+  "python-docx>=1.1.2",
+  "openpyxl>=3.1.5",
+  "pandas>=2.2.0",
+  "numpy>=2.0.0",
+  "scipy>=1.14.0",
+  "statsmodels>=0.14.0",
+  "scikit-learn>=1.5.0",
+  "matplotlib>=3.9.0",
+  "reportlab>=4.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.0",
+  "pytest-asyncio>=0.25.0",
+  "pytest-cov>=6.0.0",
+  "httpx>=0.28.0",
+  "aiosqlite>=0.20.0",
+  "ruff>=0.9.0",
+  "mypy>=1.14.0",
+  "types-redis>=4.6.0",
+  "types-PyYAML>=6.0.0",
+  "boto3-stubs[s3]>=1.36.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["app", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "N", "ASYNC", "S", "RUF"]
+ignore = ["S101", "S105", "S106"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S105", "S106", "S107", "S311", "S108"]
+"app/services/storage.py" = ["N803"]
+"app/api/**/*.py" = ["B008"]
+"app/services/datasets/**" = ["N806"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+plugins = []
+mypy_path = "."
+packages = ["app"]
+
+[[tool.mypy.overrides]]
+module = [
+  "celery.*",
+  "boto3.*",
+  "botocore.*",
+  "pypdf.*",
+  "docx.*",
+  "openpyxl.*",
+  "scipy.*",
+  "statsmodels.*",
+  "sklearn.*",
+  "matplotlib.*",
+  "pandas.*",
+  "numpy.*",
+  "reportlab.*",
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["app.services.datasets.*"]
+disable_error_code = ["import-untyped", "type-arg", "name-defined"]
+
+[[tool.mypy.overrides]]
+module = ["app.workers.tasks"]
+disable_error_code = ["untyped-decorator", "misc"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+markers = [
+  "unit: fast isolated unit tests",
+  "integration: tests requiring external services or app wiring",
+]
+filterwarnings = [
+  "ignore::DeprecationWarning",
+]
+
+[tool.coverage.run]
+source = ["app"]
+branch = true

@@ -1,0 +1,33 @@
+id: consistency_review
+version: '1.0.0'
+role: Research writing assistant
+task: Review manuscript sections and project facts for consistency issues
+allowed_evidence: Project facts and manuscript context
+prohibited_behavior:
+  - Invent inconsistencies that are not grounded in the text
+  - Invent citations or results
+citation_constraints:
+  - Flag invented-looking citations if present in text, but do not invent alternatives
+synthetic_data_constraints:
+  - Flag unlabeled synthetic data when facts indicate synthetic content
+research_integrity_constraints:
+  - Highlight unsupported claims and format mismatches
+output_schema:
+  type: object
+  required: [issues, summary]
+  properties:
+    issues:
+      type: array
+      items:
+        type: object
+        properties:
+          severity: { type: string }
+          message: { type: string }
+          section_hint: { type: string }
+    summary: { type: string }
+    warnings: { type: array, items: { type: string } }
+user_template: |
+  Target format: {{target_format}}
+  Project facts: {{project_facts}}
+  Manuscript context: {{manuscript_context}}
+  Contains synthetic data: {{contains_synthetic_data}}

@@ -1,0 +1,24 @@
+id: shorten
+version: '1.0.0'
+role: Research writing assistant
+task: Shorten selected text while preserving meaning and integrity constraints
+allowed_evidence: Selected text only unless evidence is supplied
+prohibited_behavior:
+  - Invent results or citations
+  - Drop hedging that signals uncertainty when material
+citation_constraints:
+  - Keep existing citation markers
+synthetic_data_constraints:
+  - Preserve synthetic labeling
+research_integrity_constraints:
+  - Do not invent brevity by fabricating compressed claims
+output_schema:
+  type: object
+  required: [original_text, transformed_text]
+  properties:
+    original_text: { type: string }
+    transformed_text: { type: string }
+    warnings: { type: array, items: { type: string } }
+user_template: |
+  Selected text: {{selected_text}}
+  Target length hint: {{length_hint}}

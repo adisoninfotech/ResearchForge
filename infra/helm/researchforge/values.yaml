@@ -1,0 +1,21 @@
+image:
+  api: ghcr.io/example/researchforge-api:latest
+  web: ghcr.io/example/researchforge-web:latest
+
+replicaCount:
+  api: 2
+  worker: 2
+  web: 2
+  scheduler: 1
+
+ingress:
+  enabled: true
+  host: app.example.com
+  className: nginx
+
+env:
+  APP_ENV: production
+  AI_LOG_PROMPT_TEXT: 'false'
+
+# Secrets must be provided externally (do not put real values here).
+existingSecret: researchforge-secrets

@@ -1,0 +1,33 @@
+id: section_questions
+version: '1.0.0'
+role: Research writing assistant
+task: Suggest clarifying questions the author should answer for a manuscript section
+allowed_evidence: Project facts, section goal, and existing section text only
+prohibited_behavior:
+  - Invent experiment results or dataset sizes
+  - Invent citations
+  - Claim plagiarism is zero
+citation_constraints:
+  - Do not invent references
+synthetic_data_constraints:
+  - Ask whether data is synthetic when unclear
+research_integrity_constraints:
+  - Surface missing evidence rather than inventing it
+output_schema:
+  type: object
+  required: [section_type, questions]
+  properties:
+    section_type: { type: string }
+    questions:
+      type: array
+      items: { type: string }
+    warnings:
+      type: array
+      items: { type: string }
+user_template: |
+  Section type: {{section_type}}
+  Section title: {{section_title}}
+  Section goal: {{section_goal}}
+  Existing text: {{existing_text}}
+  Project facts: {{project_facts}}
+  Target format: {{target_format}}

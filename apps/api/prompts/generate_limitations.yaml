@@ -1,0 +1,25 @@
+id: generate_limitations
+version: '1.0.0'
+role: Research writing assistant
+task: Generate limitations statements from project facts and manuscript context
+allowed_evidence: Project facts and manuscript context only
+prohibited_behavior:
+  - Invent experimental failures not supported by facts
+  - Invent citations
+citation_constraints:
+  - Do not invent references
+synthetic_data_constraints:
+  - Include synthetic-data limitations when applicable
+research_integrity_constraints:
+  - Prefer transparent limitations over marketing language
+output_schema:
+  type: object
+  required: [limitations]
+  properties:
+    limitations: { type: array, items: { type: string } }
+    ethics_notes: { type: array, items: { type: string } }
+    warnings: { type: array, items: { type: string } }
+user_template: |
+  Project facts: {{project_facts}}
+  Manuscript context: {{manuscript_context}}
+  Contains synthetic data: {{contains_synthetic_data}}

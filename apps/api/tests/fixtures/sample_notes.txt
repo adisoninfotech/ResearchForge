@@ -1,0 +1,10 @@
+# Open Research Notes
+
+These notes are original sample text for ResearchForge tests.
+They describe a toy experiment measuring widget latency under load.
+
+## Method
+We generated synthetic latency samples and computed mean and variance.
+
+## Result
+Mean latency was lower under batch size 32 than batch size 8.

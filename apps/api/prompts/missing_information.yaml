@@ -1,0 +1,26 @@
+id: missing_information
+version: '1.0.0'
+role: Research writing assistant
+task: Suggest missing information needed for a complete, honest manuscript
+allowed_evidence: Project facts, manuscript context, and evidence IDs
+prohibited_behavior:
+  - Invent answers to the missing questions
+  - Invent citations
+citation_constraints:
+  - Do not invent references
+synthetic_data_constraints:
+  - Ask about synthetic vs collected data when ambiguous
+research_integrity_constraints:
+  - Prefer precise missing-info questions over speculative fillers
+output_schema:
+  type: object
+  required: [questions]
+  properties:
+    questions: { type: array, items: { type: string } }
+    categories: { type: array, items: { type: string } }
+    warnings: { type: array, items: { type: string } }
+user_template: |
+  Project facts: {{project_facts}}
+  Manuscript context: {{manuscript_context}}
+  Evidence passages: {{evidence_passages}}
+  Target format: {{target_format}}

@@ -1,0 +1,229 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    name: Web lint / typecheck / test / build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint --workspace=@researchforge/web
+      - run: npm run typecheck --workspace=@researchforge/web
+      - run: npm run test --workspace=@researchforge/web
+      - run: npm run build --workspace=@researchforge/web
+        env:
+          NEXT_PUBLIC_APP_URL: http://localhost:3000
+          NEXT_PUBLIC_API_URL: http://localhost:8000
+          NEXT_PUBLIC_API_PREFIX: /api/v1
+
+  api:
+    name: API lint / typecheck / test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install API
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - run: ruff check app tests
+      - run: ruff format --check app tests
+      - run: mypy app
+      - run: pytest -m "not integration" --cov=app --cov-report=term-missing
+        env:
+          APP_ENV: test
+          AI_PROVIDER: fake
+          EMAIL_PROVIDER: fake
+          SECRET_KEY: ci-secret-key-not-for-production-32b
+          CSRF_SECRET: ci-csrf-secret-not-for-production-32b
+          RATE_LIMIT_ENABLED: 'false'
+
+  api-integration:
+    name: API integration (HTTP)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - run: pytest -m integration
+        env:
+          APP_ENV: test
+          AI_PROVIDER: fake
+          EMAIL_PROVIDER: fake
+          SECRET_KEY: ci-secret-key-not-for-production-32b
+          CSRF_SECRET: ci-csrf-secret-not-for-production-32b
+          RATE_LIMIT_ENABLED: 'false'
+
+  migrations:
+    name: Migration validation
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: researchforge
+          POSTGRES_PASSWORD: researchforge
+          POSTGRES_DB: researchforge
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U researchforge -d researchforge"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    defaults:
+      run:
+        working-directory: apps/api
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+      - name: Upgrade from empty database
+        run: alembic upgrade head
+        env:
+          DATABASE_URL_SYNC: postgresql+psycopg://researchforge:researchforge@localhost:5432/researchforge
+          DATABASE_URL: postgresql+asyncpg://researchforge:researchforge@localhost:5432/researchforge
+      - name: Downgrade one revision (safe enum no-op)
+        run: alembic downgrade -1
+        env:
+          DATABASE_URL_SYNC: postgresql+psycopg://researchforge:researchforge@localhost:5432/researchforge
+      - name: Re-upgrade to head
+        run: alembic upgrade head
+        env:
+          DATABASE_URL_SYNC: postgresql+psycopg://researchforge:researchforge@localhost:5432/researchforge
+
+  containers:
+    name: Container build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build API image
+        run: docker build -f infra/docker/Dockerfile.api -t researchforge-api:ci .
+      - name: Build web image
+        run: >
+          docker build -f infra/docker/Dockerfile.web -t researchforge-web:ci
+          --build-arg NEXT_PUBLIC_APP_URL=http://localhost:3000
+          --build-arg NEXT_PUBLIC_API_URL=http://localhost:8000
+          --build-arg NEXT_PUBLIC_API_PREFIX=/api/v1
+          .
+
+  security-scan:
+    name: Dependency / secret scan / SBOM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Secret scanning (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: npm audit (high+)
+        run: npm audit --audit-level=high || true
+      - name: pip-audit
+        working-directory: apps/api
+        run: |
+          python -m pip install --upgrade pip pip-audit
+          pip install -e .
+          pip-audit || true
+      - name: CycloneDX SBOM (npm)
+        run: |
+          npx --yes @cyclonedx/cdxgen -o sbom-npm.json || true
+      - name: CycloneDX SBOM (python)
+        working-directory: apps/api
+        run: |
+          python -m pip install cyclonedx-bom
+          cyclonedx-py environment -o ../../sbom-python.json || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: |
+            sbom-npm.json
+            sbom-python.json
+          if-no-files-found: ignore
+
+  e2e:
+    name: Playwright smoke
+    runs-on: ubuntu-latest
+    needs: [web]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: npm ci
+      - name: Install API for e2e webServer
+        working-directory: apps/api
+        run: |
+          python -m venv .venv
+          .venv/bin/pip install --upgrade pip
+          .venv/bin/pip install -e ".[dev]"
+      - run: npx playwright install --with-deps chromium
+        working-directory: apps/web
+      - run: npm run test:e2e --workspace=@researchforge/web
+        env:
+          NEXT_PUBLIC_APP_URL: http://127.0.0.1:3000
+          NEXT_PUBLIC_API_URL: http://127.0.0.1:3000
+          NEXT_PUBLIC_API_PREFIX: /api/v1
+          API_PROXY_TARGET: http://127.0.0.1:8000
+
+  deploy-staging:
+    name: Staging deployment (placeholder)
+    runs-on: ubuntu-latest
+    needs: [web, api, api-integration, migrations, e2e]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    environment: staging
+    steps:
+      - run: echo "Deploy to staging placeholder — wire your CD here"
+
+  deploy-production:
+    name: Production deployment (approval required)
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, containers, security-scan]
+    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+    environment: production
+    steps:
+      - run: echo "Production deploy placeholder — requires GitHub Environment approval"

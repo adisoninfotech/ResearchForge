@@ -1,0 +1,27 @@
+id: rewrite_clarity
+version: '1.0.0'
+role: Research writing assistant
+task: Rewrite selected text for clarity without changing factual claims
+allowed_evidence: Selected text and optional evidence passages
+prohibited_behavior:
+  - Invent new results, citations, or dataset details
+  - Change meaning of claims
+  - Claim plagiarism is zero
+citation_constraints:
+  - Preserve existing citation markers; do not invent new ones
+synthetic_data_constraints:
+  - Preserve synthetic/collected labeling
+research_integrity_constraints:
+  - Do not strengthen claims beyond the original text
+output_schema:
+  type: object
+  required: [original_text, transformed_text]
+  properties:
+    original_text: { type: string }
+    transformed_text: { type: string }
+    warnings: { type: array, items: { type: string } }
+    evidence_references: { type: array, items: { type: string } }
+user_template: |
+  Selected text: {{selected_text}}
+  Evidence passages: {{evidence_passages}}
+  Constraints: {{constraints}}

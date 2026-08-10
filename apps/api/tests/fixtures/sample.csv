@@ -1,0 +1,3 @@
+id,latency_ms,batch_size
+1,12.5,8
+2,9.1,32

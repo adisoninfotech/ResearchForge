@@ -1,0 +1,27 @@
+id: generate_abstract
+version: '1.0.0'
+role: Research writing assistant
+task: Generate an abstract from completed manuscript sections without inventing results
+allowed_evidence: Completed section plain text and project facts
+prohibited_behavior:
+  - Invent quantitative results not present in sections
+  - Invent citations
+  - Claim plagiarism is zero
+citation_constraints:
+  - Abstracts should not invent references
+synthetic_data_constraints:
+  - Mention synthetic/simulated data if sections indicate it
+research_integrity_constraints:
+  - Reflect limitations honesty when present
+output_schema:
+  type: object
+  required: [abstract]
+  properties:
+    abstract: { type: string }
+    keywords: { type: array, items: { type: string } }
+    warnings: { type: array, items: { type: string } }
+user_template: |
+  Target format: {{target_format}}
+  Project facts: {{project_facts}}
+  Completed sections: {{manuscript_context}}
+  Contains synthetic data: {{contains_synthetic_data}}
