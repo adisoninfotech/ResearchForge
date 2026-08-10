@@ -1,0 +1,44 @@
+# =============================================================================
+# ResearchForge Redis — Fly.io app config
+#
+# Why a self-hosted Redis instead of Upstash for Celery:
+# a Celery worker sits in a BRPOP loop against the broker, which bills as a
+# steady stream of commands (~1/sec even while completely idle, so ~2.6M/month).
+# That exhausts Upstash's free command allowance without a single user request.
+# A 256 MB Fly machine has no per-command billing.
+#
+# Reachable only over Fly's private 6PN network at researchforge-redis.internal
+# — it gets no public IP, so never run `fly ips allocate` on this app.
+#
+# Deploy (from the repo root; no build context needed, it's a stock image):
+#
+#   fly launch --no-deploy --copy-config --config infra/deploy/fly/fly.redis.toml
+#   fly volumes create redis_data --app researchforge-redis --region lhr --size 1
+#   fly secrets set --app researchforge-redis REDIS_PASSWORD="$(openssl rand -hex 24)"
+#   fly deploy --config infra/deploy/fly/fly.redis.toml
+# =============================================================================
+
+app = "researchforge-redis"
+primary_region = "lhr"
+
+[build]
+  image = "redis:7-alpine"
+
+[processes]
+  # --requirepass also satisfies Redis protected-mode, which would otherwise
+  # refuse the non-loopback connections coming from the API and worker apps.
+  #
+  # noeviction is deliberate: Celery task payloads live in this instance, and
+  # an LRU policy would silently drop queued jobs under memory pressure.
+  app = "redis-server --requirepass \"$REDIS_PASSWORD\" --maxmemory 200mb --maxmemory-policy noeviction --appendonly yes --dir /data"
+
+[mounts]
+  source = "redis_data"
+  destination = "/data"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"
+  cpus = 1
+  cpu_kind = "shared"
+  processes = ["app"]

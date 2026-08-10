@@ -1,0 +1,49 @@
+# =============================================================================
+# ResearchForge Celery worker — Fly.io app config
+#
+# Same image as the API, different command, no HTTP service, no release_command
+# (the API app owns migrations — running them from two apps would race).
+#
+# Deploy from the repo root:
+#
+#   fly launch --no-deploy --copy-config \
+#     --config infra/deploy/fly/fly.worker.toml \
+#     --dockerfile infra/docker/Dockerfile.api
+#
+#   fly deploy \
+#     --config infra/deploy/fly/fly.worker.toml \
+#     --dockerfile infra/docker/Dockerfile.api
+# =============================================================================
+
+app = "researchforge-worker"
+primary_region = "lhr"
+
+[build]
+  dockerfile = "infra/docker/Dockerfile.api"
+
+[processes]
+  # --beat embeds the scheduler in this worker. app/workers/celery_app.py defines
+  # two beat entries (hourly project cleanup, daily deletion notices). This is
+  # safe ONLY because there is exactly one worker machine — if you ever scale
+  # this app past 1, split beat into its own process group or duplicate schedules
+  # will fire.
+  #
+  # The schedule DB goes to /tmp: /app is owned by appuser but Fly's rootfs is
+  # ephemeral, and /tmp keeps it out of the app directory either way.
+  app = "celery -A app.workers.celery_app:celery_app worker --beat --schedule=/tmp/celerybeat-schedule --loglevel=INFO --concurrency=1 --without-gossip --without-mingle"
+
+[env]
+  APP_ENV = "production"
+  LOG_LEVEL = "INFO"
+  S3_USE_SSL = "true"
+  S3_REGION = "auto"
+
+[[vm]]
+  # Heavier than the API: export/analysis tasks import pandas, scipy, statsmodels,
+  # scikit-learn, matplotlib and reportlab in the same process. 512 MB OOMs on
+  # real exports; 1 GB is the safe floor (~$5-6/mo).
+  size = "shared-cpu-1x"
+  memory = "1gb"
+  cpus = 1
+  cpu_kind = "shared"
+  processes = ["app"]
