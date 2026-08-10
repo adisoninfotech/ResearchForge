@@ -1,0 +1,47 @@
+# Docker build context is the repo root for BOTH images
+# (infra/docker/Dockerfile.api and Dockerfile.web), so this file must only
+# exclude things neither image needs. Do not exclude apps/web or packages/ —
+# Dockerfile.web builds the npm workspace from the root.
+
+.git
+.github
+.husky
+.vscode
+
+# Secrets must never enter an image layer
+.env
+.env.*
+!.env.example
+
+# Installed/built inside the image
+node_modules
+**/node_modules
+**/.next
+**/out
+**/.turbo
+**/.vercel
+
+# Python
+**/__pycache__
+**/*.py[cod]
+**/.venv
+**/venv
+**/.pytest_cache
+**/.mypy_cache
+**/.ruff_cache
+**/htmlcov
+**/.coverage
+**/coverage.xml
+
+# Test + build output
+**/playwright-report
+**/test-results
+**/dist
+**/build
+apps/api/tests
+
+# Deploy/docs assets not needed at runtime
+docs
+infra/k8s
+infra/helm
+infra/nginx

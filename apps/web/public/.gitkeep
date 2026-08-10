@@ -1,0 +1,9 @@
+# Keeps apps/web/public/ present in git.
+#
+# Git does not track empty directories, but infra/docker/Dockerfile.web line 30
+# does `COPY --from=builder /app/apps/web/public ./apps/web/public`. Without a
+# tracked file here the directory is absent on a fresh checkout and the web
+# image build fails with "/app/apps/web/public: not found" — locally it appears
+# to work only because the empty folder already exists on disk.
+#
+# Safe to delete once this directory holds real static assets.
