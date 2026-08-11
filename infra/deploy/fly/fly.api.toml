@@ -19,8 +19,9 @@ app = "researchforge-api"
 primary_region = "lhr"
 
 [build]
-  # Informational: pass --dockerfile on the CLI so the context resolves to the repo root.
-  dockerfile = "infra/docker/Dockerfile.api"
+  # Path is resolved relative to THIS file's directory (infra/deploy/fly/), not
+  # the working directory — and it overrides any --dockerfile passed on the CLI.
+  dockerfile = "../../docker/Dockerfile.api"
 
 # Runs on a temporary machine with the same image + secrets before the new
 # release goes live. Alembic's env.py uses the ASYNC url (DATABASE_URL / asyncpg),

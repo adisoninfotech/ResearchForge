@@ -25,12 +25,21 @@ primary_region = "lhr"
   image = "redis:7-alpine"
 
 [processes]
+  # Must go through `sh -c`: Fly execs the process command directly, with no
+  # shell, so a bare $REDIS_PASSWORD is passed through as a literal string and
+  # silently becomes the password itself. `exec` keeps redis as PID 1 so it
+  # still receives Fly's shutdown signals.
+  #
+  # $REDIS_PASSWORD is intentionally unquoted — the secret is 64 hex characters,
+  # so there is nothing for the shell to split or expand. Keep it that way; a
+  # password with spaces or shell metacharacters would need requoting here.
+  #
   # --requirepass also satisfies Redis protected-mode, which would otherwise
   # refuse the non-loopback connections coming from the API and worker apps.
   #
   # noeviction is deliberate: Celery task payloads live in this instance, and
   # an LRU policy would silently drop queued jobs under memory pressure.
-  app = "redis-server --requirepass \"$REDIS_PASSWORD\" --maxmemory 200mb --maxmemory-policy noeviction --appendonly yes --dir /data"
+  app = 'sh -c "exec redis-server --requirepass $REDIS_PASSWORD --maxmemory 200mb --maxmemory-policy noeviction --appendonly yes --dir /data"'
 
 [mounts]
   source = "redis_data"

@@ -19,7 +19,9 @@ app = "researchforge-worker"
 primary_region = "lhr"
 
 [build]
-  dockerfile = "infra/docker/Dockerfile.api"
+  # Resolved relative to THIS file's directory (infra/deploy/fly/), not the
+  # working directory — and it overrides any --dockerfile passed on the CLI.
+  dockerfile = "../../docker/Dockerfile.api"
 
 [processes]
   # --beat embeds the scheduler in this worker. app/workers/celery_app.py defines
