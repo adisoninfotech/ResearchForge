@@ -8,6 +8,7 @@ from app.api.v1 import (
     account,
     ai,
     auth,
+    contact,
     datasets,
     discovery,
     engagement,
@@ -32,3 +33,4 @@ api_v1_router.include_router(exports.router)
 api_v1_router.include_router(engagement.router)
 api_v1_router.include_router(ai.router)
 api_v1_router.include_router(discovery.router)
+api_v1_router.include_router(contact.router)

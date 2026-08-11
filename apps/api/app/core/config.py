@@ -52,7 +52,16 @@ class Settings(BaseSettings):
     cookie_refresh_name: str = "rf_refresh"
     cookie_csrf_name: str = "rf_csrf"
     public_app_url: str = "http://localhost:3000"
-    email_provider: Literal["console", "fake"] = "console"
+    email_provider: Literal["console", "fake", "resend"] = "console"
+    # Resend transactional email. Without RESEND_API_KEY the provider falls back
+    # to console logging rather than failing, so a misconfigured deploy degrades
+    # instead of breaking signup.
+    resend_api_key: str = ""
+    # Must be on a domain verified in Resend, otherwise sends are rejected.
+    email_from: str = "ResearchForge <noreply@researchforge.net>"
+    # Where the public contact form delivers.
+    contact_recipient: str = "info@adisoninfotech.co.uk"
+    email_timeout_seconds: int = 15
     google_oauth_client_id: str = ""
     google_oauth_client_secret: str = ""
     google_oauth_redirect_uri: str = "http://localhost:8000/api/v1/auth/oauth/google/callback"

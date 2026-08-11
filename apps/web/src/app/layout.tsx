@@ -3,6 +3,7 @@ import { Fraunces, Source_Sans_3 } from 'next/font/google';
 import type { CSSProperties, ReactNode } from 'react';
 import { ErrorBoundary } from '@/components/error-boundary';
 import { Providers } from '@/components/providers';
+import { SiteFooter } from '@/components/site-footer';
 import { SiteHeader } from '@/components/site-header';
 import './globals.css';
 
@@ -46,6 +47,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </a>
             <SiteHeader />
             <main id="main">{children}</main>
+            <SiteFooter />
           </ErrorBoundary>
         </Providers>
       </body>

@@ -12,7 +12,9 @@ const links = [
   { href: '/citations', label: 'Citations' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/privacy', label: 'Privacy' },
-  { href: '/terms', label: 'Terms' },
+  // Terms is deliberately not here — it is a legal page rather than a
+  // day-to-day destination, and lives in the site footer instead.
+  { href: '/contact', label: 'Contact us' },
 ];
 
 export function SiteHeader() {
@@ -25,7 +27,10 @@ export function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-[var(--rf-border)] bg-[var(--rf-surface)] backdrop-blur">
       {/* Full-bleed rather than max-w-6xl so the logo sits in the actual
           top-left corner instead of being inset by the centred container. */}
-      <div className="flex h-16 w-full items-center justify-between gap-4 px-4 sm:px-6">
+      {/* No justify-between: that left the nav floating in the middle. The nav
+          carries ml-auto instead, so it and the account actions group together
+          on the right with the logo alone on the left. */}
+      <div className="flex h-16 w-full items-center gap-4 px-4 sm:px-6">
         <Link
           href="/"
           className="flex shrink-0 flex-col items-start gap-1"
@@ -48,7 +53,7 @@ export function SiteHeader() {
             Discover · Analyze · Innovate
           </span>
         </Link>
-        <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
+        <nav className="ml-auto hidden items-center gap-1 md:flex" aria-label="Primary">
           {links.map((link) => (
             <Link
               key={link.href}
@@ -120,7 +125,7 @@ export function SiteHeader() {
         </div>
         <button
           type="button"
-          className="rounded-md border border-[var(--rf-border)] px-3 py-2 text-sm md:hidden"
+          className="ml-auto rounded-md border border-[var(--rf-border)] px-3 py-2 text-sm md:hidden"
           aria-expanded={open}
           aria-controls="mobile-nav"
           onClick={() => setOpen((v) => !v)}

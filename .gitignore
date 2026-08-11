@@ -64,3 +64,5 @@ packages/*/dist/
 coverage/
 .coverage.*
 *.sqlite3
+# Local SQLite files from running the API outside Docker
+apps/api/*.db

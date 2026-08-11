@@ -16,6 +16,9 @@ class OutboundEmail:
     to: str
     subject: str
     body: str
+    # Set for the contact form so replying goes to the enquirer, not to the
+    # verified sending address nobody reads.
+    reply_to: str | None = None
 
 
 class EmailProvider(Protocol):
@@ -42,6 +45,47 @@ class ConsoleEmailProvider:
         )
 
 
+class ResendEmailProvider:
+    """Transactional sending via Resend's HTTP API.
+
+    Chosen over SMTP because it needs no long-lived connection or port access,
+    which suits short-lived Fly machines.
+
+    The ``from`` address must sit on a domain verified in Resend (DKIM/SPF
+    records); unverified senders are rejected outright.
+    """
+
+    def __init__(self, settings: Settings) -> None:
+        self.settings = settings
+
+    async def send(self, message: OutboundEmail) -> None:
+        import httpx
+
+        payload: dict[str, object] = {
+            "from": self.settings.email_from,
+            "to": [message.to],
+            "subject": message.subject,
+            "text": message.body,
+        }
+        if message.reply_to:
+            payload["reply_to"] = message.reply_to
+
+        try:
+            async with httpx.AsyncClient(timeout=self.settings.email_timeout_seconds) as client:
+                response = await client.post(
+                    "https://api.resend.com/emails",
+                    headers={"Authorization": f"Bearer {self.settings.resend_api_key}"},
+                    json=payload,
+                )
+                response.raise_for_status()
+        except httpx.HTTPError as exc:
+            # Deliberately not re-raised as a user-facing failure by callers of
+            # registration: a bounced verification email must not roll back an
+            # otherwise valid signup. The contact endpoint does surface it.
+            logger.error("email_send_failed", to=message.to, error=str(exc))
+            raise
+
+
 _fake_singleton = FakeEmailProvider()
 
 
@@ -49,6 +93,13 @@ def get_email_provider(settings: Settings | None = None) -> EmailProvider:
     settings = settings or get_settings()
     if settings.app_env == "test" or settings.email_provider == "fake":
         return _fake_singleton
+    if settings.email_provider == "resend":
+        if not settings.resend_api_key:
+            # Degrade rather than fail: a deploy missing the key still serves,
+            # and the message lands in the logs where it can be recovered.
+            logger.warning("resend_api_key_missing_falling_back_to_console")
+            return ConsoleEmailProvider()
+        return ResendEmailProvider(settings)
     return ConsoleEmailProvider()
 
 
@@ -87,6 +138,30 @@ async def send_password_reset_email(
             to=to,
             subject="Reset your ResearchForge password",
             body=f"Reset your password by opening: {link}",
+        )
+    )
+
+
+async def send_contact_message(
+    *,
+    name: str,
+    email: str,
+    message: str,
+    settings: Settings | None = None,
+) -> None:
+    """Deliver a public contact-form enquiry to the team inbox.
+
+    reply_to is the enquirer so a reply goes straight back to them. The from
+    address stays on the verified domain — putting the visitor's address there
+    would fail SPF and land the mail in spam.
+    """
+    settings = settings or get_settings()
+    await get_email_provider(settings).send(
+        OutboundEmail(
+            to=settings.contact_recipient,
+            subject=f"ResearchForge enquiry from {name}",
+            body=f"Name: {name}\nEmail: {email}\n\n{message}",
+            reply_to=email,
         )
     )
 
