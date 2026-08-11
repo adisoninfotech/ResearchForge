@@ -9,6 +9,7 @@ import { ThemeToggle } from './theme-toggle';
 
 const links = [
   { href: '/workspace', label: 'Workspace' },
+  { href: '/citations', label: 'Citations' },
   { href: '/pricing', label: 'Pricing' },
   { href: '/privacy', label: 'Privacy' },
   { href: '/terms', label: 'Terms' },

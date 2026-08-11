@@ -38,6 +38,11 @@ const capabilities: Action[] = [
     href: '/workspace',
   },
   {
+    label: 'Find citations',
+    description: 'Match a claim in your draft to papers that could support it.',
+    href: '/citations',
+  },
+  {
     label: 'Manage references',
     description: 'Import BibTeX and RIS, deduplicate entries, and keep citations consistent.',
     href: '/workspace',
@@ -181,9 +186,12 @@ export default function HomePage() {
             Open the guest workspace to try it in your browser, or create an account to save
             projects, upload files and export full manuscripts.
           </p>
+          {/* Deliberately not "Open guest workspace" — that exact label already
+              appears in the hero, and two links with identical accessible names
+              are both an a11y smell and a Playwright strict-mode violation. */}
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link href="/workspace">
-              <Button size="lg">Open guest workspace</Button>
+              <Button size="lg">Start drafting free</Button>
             </Link>
             <Link href="/pricing">
               <Button size="lg" variant="secondary">
