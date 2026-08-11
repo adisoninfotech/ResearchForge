@@ -1,22 +1,128 @@
 import Link from 'next/link';
 import { Button } from '@researchforge/ui';
 
+type Action = {
+  label: string;
+  description: string;
+  href: string;
+};
+
+const startActions: Action[] = [
+  {
+    label: 'Open workspace',
+    description: 'Start drafting straight away — no account needed to explore.',
+    href: '/workspace',
+  },
+  {
+    label: 'Draft an outline',
+    description: 'Turn a research question into a structured manuscript skeleton.',
+    href: '/workspace',
+  },
+  {
+    label: 'Upload your sources',
+    description: 'PDFs, Word documents and spreadsheets, parsed into searchable evidence.',
+    href: '/workspace',
+  },
+  {
+    label: 'Check similarity',
+    description: 'See where your text overlaps with your sources before you submit.',
+    href: '/workspace',
+  },
+];
+
+const capabilities: Action[] = [
+  {
+    label: 'Ground every claim',
+    description:
+      'Each generated sentence links back to the passage it came from, so you can verify before you cite.',
+    href: '/workspace',
+  },
+  {
+    label: 'Manage references',
+    description: 'Import BibTeX and RIS, deduplicate entries, and keep citations consistent.',
+    href: '/workspace',
+  },
+  {
+    label: 'Analyse datasets',
+    description: 'Upload CSVs, run descriptive and inferential statistics, generate figures.',
+    href: '/workspace',
+  },
+  {
+    label: 'Build tables and figures',
+    description: 'Publication-ready output generated from your own data, not invented.',
+    href: '/workspace',
+  },
+  {
+    label: 'Export to journal formats',
+    description: 'Complete manuscripts as DOCX or PDF, with references formatted correctly.',
+    href: '/workspace',
+  },
+  {
+    label: 'Keep your work private',
+    description: 'Projects stay yours. Training on your content is off unless you opt in.',
+    href: '/privacy',
+  },
+];
+
+const steps = [
+  {
+    number: '01',
+    title: 'Bring your evidence',
+    body: 'Upload papers, notes and datasets. ResearchForge extracts the text, splits it into passages, and indexes it.',
+  },
+  {
+    number: '02',
+    title: 'Draft against it',
+    body: 'Generate outlines and sections that quote your sources directly, with every claim traceable to a passage.',
+  },
+  {
+    number: '03',
+    title: 'Check and export',
+    body: 'Run a similarity report, review the flagged overlaps, then export a complete manuscript.',
+  },
+];
+
+function ActionCard({ action }: { action: Action }) {
+  return (
+    <Link
+      href={action.href}
+      className="group flex flex-col rounded-lg border border-[var(--rf-border)] bg-[var(--rf-surface)] p-5 transition hover:border-[var(--rf-accent)] hover:shadow-sm"
+    >
+      <span className="text-base font-semibold transition group-hover:text-[var(--rf-accent)]">
+        {action.label}
+      </span>
+      <span className="mt-2 text-sm leading-relaxed text-[var(--rf-muted)]">
+        {action.description}
+      </span>
+    </Link>
+  );
+}
+
+function SectionHeading({ eyebrow, title }: { eyebrow: string; title: string }) {
+  return (
+    <div className="mb-8">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--rf-accent)]">
+        {eyebrow}
+      </p>
+      <h2 className="rf-display mt-2 text-3xl md:text-4xl">{title}</h2>
+    </div>
+  );
+}
+
 export default function HomePage() {
   return (
-    <div className="rf-hero-bg relative overflow-hidden">
-      <div className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-6xl items-center gap-10 px-4 py-16 lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="rf-animate-rise space-y-6">
-          <p className="rf-display text-5xl leading-none tracking-tight md:text-7xl">
-            ResearchForge
-          </p>
-          <h1 className="max-w-xl text-2xl font-medium leading-snug md:text-3xl">
-            Draft manuscripts grounded in your evidence—not guesswork.
+    <div>
+      <section className="rf-hero-bg relative overflow-hidden border-b border-[var(--rf-border)]">
+        <div className="rf-animate-rise mx-auto max-w-4xl px-4 py-24 text-center md:py-32">
+          <p className="rf-display text-5xl leading-none md:text-7xl">ResearchForge</p>
+          <h1 className="mx-auto mt-6 max-w-2xl text-2xl font-medium leading-snug md:text-4xl">
+            Draft manuscripts grounded in your evidence — not guesswork.
           </h1>
-          <p className="max-w-lg text-[var(--rf-muted)]">
-            Explore as a guest with a browser-local preview. Sign in to save projects, upload files,
-            export complete manuscripts, and run full similarity checks.
+          <p className="mx-auto mt-5 max-w-xl text-[var(--rf-muted)] md:text-lg">
+            Start from a question, a paper, or a dataset. ResearchForge helps you outline, draft,
+            cite and export — with every claim traceable to a source you provided.
           </p>
-          <div className="flex flex-wrap gap-3">
+          <div className="mt-9 flex flex-wrap justify-center gap-3">
             <Link href="/workspace">
               <Button size="lg">Open guest workspace</Button>
             </Link>
@@ -26,12 +132,67 @@ export default function HomePage() {
               </Button>
             </Link>
           </div>
+          <p className="mt-5 text-sm text-[var(--rf-muted)]">
+            No account needed to try it. Nothing leaves your browser until you sign in.
+          </p>
         </div>
-        <div
-          aria-hidden="true"
-          className="rf-animate-drift relative hidden h-[28rem] rounded-none border-y border-[var(--rf-border)] bg-[url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22800%22 height=%22600%22 viewBox=%220 0 800 600%22%3E%3Crect fill=%22%230f6a56%22 width=%22800%22 height=%22600%22/%3E%3Cpath fill=%22%23d9efe4%22 opacity=%220.25%22 d=%22M0 420C120 360 220 500 360 460C520 410 620 280 800 320V600H0Z%22/%3E%3Cpath fill=%22%23f0e2c8%22 opacity=%220.35%22 d=%22M0 0H800V180C620 220 500 120 340 150C180 180 80 260 0 220Z%22/%3E%3C/svg%3E')] bg-cover bg-center lg:block"
-        />
-      </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-20">
+        <SectionHeading eyebrow="Start with your research" title="Pick up wherever you are" />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {startActions.map((action) => (
+            <ActionCard key={action.label} action={action} />
+          ))}
+        </div>
+      </section>
+
+      <section className="border-y border-[var(--rf-border)] bg-[var(--rf-surface-2)]">
+        <div className="mx-auto max-w-6xl px-4 py-20">
+          <SectionHeading
+            eyebrow="Work with evidence and sources"
+            title="Everything tied back to what you uploaded"
+          />
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {capabilities.map((action) => (
+              <ActionCard key={action.label} action={action} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-20">
+        <SectionHeading eyebrow="How it works" title="Three steps, start to submission" />
+        <ol className="grid gap-8 md:grid-cols-3">
+          {steps.map((step) => (
+            <li key={step.number}>
+              <p className="rf-display text-4xl text-[var(--rf-accent)]">{step.number}</p>
+              <h3 className="mt-3 text-lg font-semibold">{step.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--rf-muted)]">{step.body}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="border-t border-[var(--rf-border)] bg-[var(--rf-surface-2)]">
+        <div className="mx-auto max-w-3xl px-4 py-20 text-center">
+          <h2 className="rf-display text-3xl md:text-4xl">Ready to draft something?</h2>
+          <p className="mx-auto mt-4 max-w-xl text-[var(--rf-muted)]">
+            Open the guest workspace to try it in your browser, or create an account to save
+            projects, upload files and export full manuscripts.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-3">
+            <Link href="/workspace">
+              <Button size="lg">Open guest workspace</Button>
+            </Link>
+            <Link href="/pricing">
+              <Button size="lg" variant="secondary">
+                See plans
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
