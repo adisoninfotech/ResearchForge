@@ -3,15 +3,15 @@
 End-to-end recipe for putting ResearchForge on managed infrastructure with no
 application code changes. Every provider swap is configuration only.
 
-| Piece | Provider | Cost |
-| --- | --- | --- |
-| Next.js frontend | Vercel (Hobby) | free |
-| FastAPI API | Fly.io, 512 MB | ~$2–4/mo |
-| Celery worker + beat | Fly.io, 1 GB | ~$5–6/mo |
-| Redis (cache + broker) | Fly.io, 256 MB + 1 GB volume | ~$2/mo |
-| Postgres + pgvector | Supabase (Free) | free |
-| Object storage | Cloudflare R2 (Free) | free |
-| LLM inference | Groq (Free) | free |
+| Piece                  | Provider                     | Cost     |
+| ---------------------- | ---------------------------- | -------- |
+| Next.js frontend       | Vercel (Hobby)               | free     |
+| FastAPI API            | Fly.io, 512 MB               | ~$2–4/mo |
+| Celery worker + beat   | Fly.io, 1 GB                 | ~$5–6/mo |
+| Redis (cache + broker) | Fly.io, 256 MB + 1 GB volume | ~$2/mo   |
+| Postgres + pgvector    | Supabase (Free)              | free     |
+| Object storage         | Cloudflare R2 (Free)         | free     |
+| LLM inference          | Groq (Free)                  | free     |
 
 **Honest total: roughly $9–12/month, not $0.** The three Fly machines are the
 reason — see [Why it is not free](#why-it-is-not-free) for what actually forces
@@ -68,15 +68,15 @@ npm run secrets
 
 This deployment targets the **UK**. Every provider is pinned to London, and they
 must stay in agreement — a Supabase project in Virginia behind a Fly app in
-London adds a round-trip to *every* query, and this app is chatty with the
+London adds a round-trip to _every_ query, and this app is chatty with the
 database.
 
-| Provider | Region | Set where |
-| --- | --- | --- |
-| Fly (api, worker, redis) | `lhr` | `primary_region` in each `fly.*.toml` |
-| Supabase | West EU (London) `eu-west-2` | project creation form — **cannot be changed later** |
-| Vercel | `lhr1` | `apps/web/vercel.json` |
-| Cloudflare R2 | jurisdiction: European Union | bucket creation form |
+| Provider                 | Region                       | Set where                                           |
+| ------------------------ | ---------------------------- | --------------------------------------------------- |
+| Fly (api, worker, redis) | `lhr`                        | `primary_region` in each `fly.*.toml`               |
+| Supabase                 | West EU (London) `eu-west-2` | project creation form — **cannot be changed later** |
+| Vercel                   | `lhr1`                       | `apps/web/vercel.json`                              |
+| Cloudflare R2            | jurisdiction: European Union | bucket creation form                                |
 
 R2 is the odd one out: it has no regions, so `S3_REGION=auto` regardless. What
 it does have is an optional **jurisdiction** setting that constrains where
@@ -229,10 +229,14 @@ returns HTTP 200 either way and reports per-component state
 (`apps/api/app/api/health.py:41-59`):
 
 ```json
-{"status":"ok","components":[
-  {"name":"database","status":"ok"},
-  {"name":"redis","status":"ok"},
-  {"name":"object_storage","status":"ok"}]}
+{
+  "status": "ok",
+  "components": [
+    { "name": "database", "status": "ok" },
+    { "name": "redis", "status": "ok" },
+    { "name": "object_storage", "status": "ok" }
+  ]
+}
 ```
 
 Any `"status":"error"` component names exactly which provider is misconfigured.
@@ -290,12 +294,12 @@ Import the repo, then in **Project Settings**:
 
 Environment variables (Production):
 
-| Variable | Value |
-| --- | --- |
-| `API_PROXY_TARGET` | `https://researchforge-api.fly.dev` |
-| `NEXT_PUBLIC_APP_URL` | `https://<your-project>.vercel.app` |
-| `NEXT_PUBLIC_API_URL` | `https://<your-project>.vercel.app` |
-| `NEXT_PUBLIC_API_PREFIX` | `/api/v1` |
+| Variable                 | Value                               |
+| ------------------------ | ----------------------------------- |
+| `API_PROXY_TARGET`       | `https://researchforge-api.fly.dev` |
+| `NEXT_PUBLIC_APP_URL`    | `https://<your-project>.vercel.app` |
+| `NEXT_PUBLIC_API_URL`    | `https://<your-project>.vercel.app` |
+| `NEXT_PUBLIC_API_PREFIX` | `/api/v1`                           |
 
 `NEXT_PUBLIC_API_URL` pointing at Vercel rather than Fly is not a mistake. The
 rewrites in `next.config.ts:10-21` forward `/api/*` and `/health/*` to

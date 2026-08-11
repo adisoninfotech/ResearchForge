@@ -1,0 +1,21 @@
+# Gitleaks configuration for ResearchForge.
+#
+# Without this file gitleaks falls back to its bundled ruleset (the CI log says
+# "no gitleaks config found in path .gitleaks.toml, using default gitleaks
+# config"). The defaults are kept — this only records known-false positives.
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Known test fixtures that are not credentials"
+
+# apps/web/src/lib/guest-storage.test.ts:45,47 — a guest-draft conversion key
+# fixture. The `generic-api-key` rule matches it because the field is named
+# `conversionKey` and the value is a 12-character quoted string; the value is
+# hard-coded in the test's own assertion, so it is plainly not a secret.
+#
+# Deliberately a value-level allowlist rather than a path-level one: excluding
+# whole test files would stop gitleaks catching a genuine credential
+# accidentally pasted into a test. Add new literals here as they come up.
+regexes = ['''key-12345678''']

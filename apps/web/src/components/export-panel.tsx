@@ -85,9 +85,10 @@ export function ExportPanel({ projectId }: ExportPanelProps) {
     setBusy(true);
     setError(null);
     try {
-      const exportAuthors = authorsDirty || !authors.some((a) => a.name.trim())
-        ? await saveAuthors()
-        : sanitizeAuthorsForSave(authors);
+      const exportAuthors =
+        authorsDirty || !authors.some((a) => a.name.trim())
+          ? await saveAuthors()
+          : sanitizeAuthorsForSave(authors);
       const result = await api.exportPreview(projectId, {
         template_id: templateId,
         page,
@@ -116,9 +117,10 @@ export function ExportPanel({ projectId }: ExportPanelProps) {
     setBusy(true);
     setError(null);
     try {
-      const exportAuthors = authorsDirty || !authors.some((a) => a.name.trim())
-        ? await saveAuthors()
-        : sanitizeAuthorsForSave(authors);
+      const exportAuthors =
+        authorsDirty || !authors.some((a) => a.name.trim())
+          ? await saveAuthors()
+          : sanitizeAuthorsForSave(authors);
       const warningCodes = issues.filter((i) => i.severity === 'warning').map((i) => i.code);
       const result = (await api.runExport(projectId, {
         template_id: templateId,
