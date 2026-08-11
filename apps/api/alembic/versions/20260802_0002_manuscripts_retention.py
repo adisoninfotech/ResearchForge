@@ -18,15 +18,18 @@ down_revision: Union[str, None] = "20260322_0001"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-project_status = sa.Enum("draft", "active", "archived", "trash", name="project_status")
-retention_policy = sa.Enum(
+project_status = postgresql.ENUM(
+    "draft", "active", "archived", "trash", name="project_status", create_type=False
+)
+retention_policy = postgresql.ENUM(
     "keep",
     "trash_30",
     "inactive_draft_90",
     "plan_default",
     name="retention_policy",
+    create_type=False,
 )
-section_type = sa.Enum(
+section_type = postgresql.ENUM(
     "abstract",
     "keywords",
     "introduction",
@@ -39,10 +42,15 @@ section_type = sa.Enum(
     "references",
     "custom",
     name="section_type",
+    create_type=False,
 )
-section_status = sa.Enum("empty", "draft", "complete", name="section_status")
-version_author_type = sa.Enum("user", "ai", "system", name="version_author_type")
-fact_category = sa.Enum(
+section_status = postgresql.ENUM(
+    "empty", "draft", "complete", name="section_status", create_type=False
+)
+version_author_type = postgresql.ENUM(
+    "user", "ai", "system", name="version_author_type", create_type=False
+)
+fact_category = postgresql.ENUM(
     "problem",
     "contribution",
     "dataset",
@@ -51,13 +59,17 @@ fact_category = sa.Enum(
     "ethics",
     "other",
     name="fact_category",
+    create_type=False,
 )
-fact_source_type = sa.Enum("user", "ai", "import", "system", name="fact_source_type")
-fact_verification_status = sa.Enum(
+fact_source_type = postgresql.ENUM(
+    "user", "ai", "import", "system", name="fact_source_type", create_type=False
+)
+fact_verification_status = postgresql.ENUM(
     "unverified",
     "verified",
     "disputed",
     name="fact_verification_status",
+    create_type=False,
 )
 
 

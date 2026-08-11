@@ -18,15 +18,22 @@ down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-user_status = sa.Enum(
+# create_type=False is required. These enums are created explicitly below with
+# checkfirst=True; without this flag op.create_table() also fires SQLAlchemy's
+# auto-create hook with checkfirst=False, which emits an unguarded CREATE TYPE
+# and fails with DuplicateObjectError on the second attempt.
+user_status = postgresql.ENUM(
     "active",
     "suspended",
     "pending_deletion",
     "deleted",
     name="user_status",
+    create_type=False,
 )
-subscription_plan = sa.Enum("free", "researcher", "lab", name="subscription_plan")
-audit_action = sa.Enum(
+subscription_plan = postgresql.ENUM(
+    "free", "researcher", "lab", name="subscription_plan", create_type=False
+)
+audit_action = postgresql.ENUM(
     "register",
     "login",
     "logout",
@@ -42,6 +49,7 @@ audit_action = sa.Enum(
     "guest_draft_converted",
     "oauth_link",
     name="audit_action",
+    create_type=False,
 )
 
 

@@ -18,15 +18,16 @@ down_revision: Union[str, None] = "20260802_0002"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-ai_job_status = sa.Enum(
+ai_job_status = postgresql.ENUM(
     "queued",
     "running",
     "completed",
     "failed",
     "cancelled",
     name="ai_job_status",
+    create_type=False,
 )
-ai_operation = sa.Enum(
+ai_operation = postgresql.ENUM(
     "outline",
     "section_questions",
     "draft_section",
@@ -38,14 +39,16 @@ ai_operation = sa.Enum(
     "generate_limitations",
     "consistency_review",
     name="ai_operation",
+    create_type=False,
 )
-ai_proposal_status = sa.Enum(
+ai_proposal_status = postgresql.ENUM(
     "pending",
     "accepted",
     "partially_accepted",
     "rejected",
     "superseded",
     name="ai_proposal_status",
+    create_type=False,
 )
 
 

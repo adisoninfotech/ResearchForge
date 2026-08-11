@@ -18,7 +18,7 @@ down_revision: Union[str, None] = "20260802_0004"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-dataset_provenance_type = sa.Enum(
+dataset_provenance_type = postgresql.ENUM(
     "uploaded_real",
     "publicly_sourced",
     "synthetic",
@@ -26,8 +26,9 @@ dataset_provenance_type = sa.Enum(
     "calculated_result",
     "user_entered",
     name="dataset_provenance_type",
+    create_type=False,
 )
-dataset_column_type = sa.Enum(
+dataset_column_type = postgresql.ENUM(
     "integer",
     "float",
     "boolean",
@@ -35,8 +36,9 @@ dataset_column_type = sa.Enum(
     "string",
     "datetime",
     name="dataset_column_type",
+    create_type=False,
 )
-dataset_column_override_type = sa.Enum(
+dataset_column_override_type = postgresql.ENUM(
     "integer",
     "float",
     "boolean",
@@ -44,8 +46,9 @@ dataset_column_override_type = sa.Enum(
     "string",
     "datetime",
     name="dataset_column_override_type",
+    create_type=False,
 )
-analysis_operation = sa.Enum(
+analysis_operation = postgresql.ENUM(
     "descriptive",
     "correlation",
     "missing_values",
@@ -61,15 +64,17 @@ analysis_operation = sa.Enum(
     "roc_curve",
     "precision_recall",
     name="analysis_operation",
+    create_type=False,
 )
-analysis_run_status = sa.Enum(
+analysis_run_status = postgresql.ENUM(
     "queued",
     "running",
     "completed",
     "failed",
     name="analysis_run_status",
+    create_type=False,
 )
-figure_kind = sa.Enum(
+figure_kind = postgresql.ENUM(
     "bar",
     "line",
     "scatter",
@@ -81,8 +86,9 @@ figure_kind = sa.Enum(
     "precision_recall",
     "conceptual",
     name="figure_kind",
+    create_type=False,
 )
-table_kind = sa.Enum(
+table_kind = postgresql.ENUM(
     "dataset_summary",
     "descriptive_stats",
     "performance_comparison",
@@ -90,6 +96,7 @@ table_kind = sa.Enum(
     "ablation",
     "statistical_test",
     name="table_kind",
+    create_type=False,
 )
 
 

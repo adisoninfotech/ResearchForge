@@ -18,7 +18,7 @@ down_revision: Union[str, None] = "20260802_0006"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-export_job_status = sa.Enum(
+export_job_status = postgresql.ENUM(
     "queued",
     "validating",
     "rendering",
@@ -28,8 +28,9 @@ export_job_status = sa.Enum(
     "blocked",
     "cancelled",
     name="export_job_status",
+    create_type=False,
 )
-export_artifact_kind = sa.Enum(
+export_artifact_kind = postgresql.ENUM(
     "docx",
     "latex",
     "pdf",
@@ -43,13 +44,15 @@ export_artifact_kind = sa.Enum(
     "provenance_manifest",
     "canonical_json",
     name="export_artifact_kind",
+    create_type=False,
 )
-export_template_id = sa.Enum(
+export_template_id = postgresql.ENUM(
     "generic_academic",
     "ieee_two_column",
     "springer_lncs",
     "acm",
     name="export_template_id",
+    create_type=False,
 )
 
 

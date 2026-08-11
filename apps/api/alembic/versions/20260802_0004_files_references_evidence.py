@@ -18,7 +18,7 @@ down_revision: Union[str, None] = "20260802_0003"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-file_kind = sa.Enum(
+file_kind = postgresql.ENUM(
     "pdf",
     "docx",
     "txt",
@@ -31,8 +31,9 @@ file_kind = sa.Enum(
     "jpeg",
     "other",
     name="file_kind",
+    create_type=False,
 )
-file_processing_status = sa.Enum(
+file_processing_status = postgresql.ENUM(
     "pending",
     "scanning",
     "extracting",
@@ -42,8 +43,9 @@ file_processing_status = sa.Enum(
     "failed",
     "quarantined",
     name="file_processing_status",
+    create_type=False,
 )
-file_job_status = sa.Enum(
+file_job_status = postgresql.ENUM(
     "pending",
     "scanning",
     "extracting",
@@ -53,22 +55,25 @@ file_job_status = sa.Enum(
     "failed",
     "quarantined",
     name="file_job_status",
+    create_type=False,
 )
-reference_verification_status = sa.Enum(
+reference_verification_status = postgresql.ENUM(
     "unverified",
     "verified",
     "needs_correction",
     "duplicate",
     name="reference_verification_status",
+    create_type=False,
 )
-evidence_relation = sa.Enum(
+evidence_relation = postgresql.ENUM(
     "supports",
     "contradicts",
     "background",
     "method",
     name="evidence_relation",
+    create_type=False,
 )
-claim_support_status = sa.Enum(
+claim_support_status = postgresql.ENUM(
     "supported",
     "partially_supported",
     "unsupported",
@@ -77,6 +82,7 @@ claim_support_status = sa.Enum(
     "user_provided_fact",
     "calculated_result",
     name="claim_support_status",
+    create_type=False,
 )
 
 

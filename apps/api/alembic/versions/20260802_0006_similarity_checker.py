@@ -18,10 +18,16 @@ down_revision: Union[str, None] = "20260802_0005"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-similarity_job_status = sa.Enum(
-    "queued", "running", "completed", "failed", "cancelled", name="similarity_job_status"
+similarity_job_status = postgresql.ENUM(
+    "queued",
+    "running",
+    "completed",
+    "failed",
+    "cancelled",
+    name="similarity_job_status",
+    create_type=False,
 )
-similarity_finding_class = sa.Enum(
+similarity_finding_class = postgresql.ENUM(
     "exact_textual_overlap",
     "near_textual_overlap",
     "semantic_similarity",
@@ -35,8 +41,9 @@ similarity_finding_class = sa.Enum(
     "internal_duplication",
     "needs_human_review",
     name="similarity_finding_class",
+    create_type=False,
 )
-finding_resolution_action = sa.Enum(
+finding_resolution_action = postgresql.ENUM(
     "unresolved",
     "false_positive",
     "added_citation",
@@ -44,8 +51,9 @@ finding_resolution_action = sa.Enum(
     "accepted_technical_language",
     "needs_review",
     name="finding_resolution_action",
+    create_type=False,
 )
-similarity_source_kind = sa.Enum(
+similarity_source_kind = postgresql.ENUM(
     "uploaded_reference",
     "project_document",
     "authorized_prior_manuscript",
@@ -53,6 +61,7 @@ similarity_source_kind = sa.Enum(
     "internal_section",
     "licensed_provider",
     name="similarity_source_kind",
+    create_type=False,
 )
 
 

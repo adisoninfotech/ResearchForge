@@ -18,7 +18,7 @@ down_revision: Union[str, None] = "20260802_0007"
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-milestone_type = sa.Enum(
+milestone_type = postgresql.ENUM(
     "research_plan_approved",
     "first_section_completed",
     "dataset_added",
@@ -29,8 +29,9 @@ milestone_type = sa.Enum(
     "first_full_draft_completed",
     "submission_package_generated",
     name="milestone_type",
+    create_type=False,
 )
-daily_goal_type = sa.Enum(
+daily_goal_type = postgresql.ENUM(
     "complete_a_section",
     "verify_references",
     "analyze_a_dataset",
@@ -38,8 +39,9 @@ daily_goal_type = sa.Enum(
     "create_figures",
     "prepare_export",
     name="daily_goal_type",
+    create_type=False,
 )
-notification_kind = sa.Enum(
+notification_kind = postgresql.ENUM(
     "draft_scheduled_for_deletion",
     "trash_expiration",
     "collaborator_activity",
@@ -49,8 +51,9 @@ notification_kind = sa.Enum(
     "weekly_project_summary",
     "writing_reminders",
     name="notification_kind",
+    create_type=False,
 )
-analytics_event_type = sa.Enum(
+analytics_event_type = postgresql.ENUM(
     "account_created",
     "project_created",
     "section_completed",
@@ -59,6 +62,7 @@ analytics_event_type = sa.Enum(
     "similarity_report_completed",
     "dataset_analyzed",
     name="analytics_event_type",
+    create_type=False,
 )
 
 
