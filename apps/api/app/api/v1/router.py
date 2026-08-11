@@ -9,6 +9,7 @@ from app.api.v1 import (
     ai,
     auth,
     datasets,
+    discovery,
     engagement,
     exports,
     files,
@@ -30,3 +31,4 @@ api_v1_router.include_router(similarity.router)
 api_v1_router.include_router(exports.router)
 api_v1_router.include_router(engagement.router)
 api_v1_router.include_router(ai.router)
+api_v1_router.include_router(discovery.router)

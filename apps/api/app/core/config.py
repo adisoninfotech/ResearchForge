@@ -115,6 +115,11 @@ class Settings(BaseSettings):
     rate_limit_enabled: bool = True
     rate_limit_default: str = "100/minute"
 
+    # Crossref paper discovery. No API key exists — the address only puts calls
+    # in Crossref's "polite pool" for better service, and omitting it still works.
+    crossref_mailto: str = ""
+    crossref_timeout_seconds: int = 15
+
     ai_provider: Literal["openai_compatible", "fake", "vllm"] = Field(
         default="openai_compatible",
         validation_alias=AliasChoices("AI_PROVIDER", "ai_provider", "LLM_PROVIDER"),
