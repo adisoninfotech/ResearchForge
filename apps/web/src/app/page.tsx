@@ -119,8 +119,9 @@ export default function HomePage() {
     <div>
       <section className="rf-hero-bg relative overflow-hidden border-b border-[var(--rf-border)]">
         <div className="rf-animate-rise mx-auto max-w-4xl px-4 py-24 text-center md:py-32">
-          <p className="rf-display text-5xl leading-none md:text-7xl">ResearchForge</p>
-          <h1 className="mx-auto mt-6 max-w-2xl text-2xl font-medium leading-snug md:text-4xl">
+          {/* No wordmark or tagline here — both live in the header, under the
+              logo. Repeating them just pushes the actual message down. */}
+          <h1 className="mx-auto max-w-3xl text-3xl font-medium leading-snug md:text-5xl">
             Draft manuscripts grounded in your evidence — not guesswork.
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-[var(--rf-muted)] md:text-lg">

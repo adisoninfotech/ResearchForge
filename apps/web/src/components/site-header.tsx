@@ -1,11 +1,11 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Button, cn } from '@researchforge/ui';
 import { useAuth } from './auth-provider';
-import { ThemeToggle } from './theme-toggle';
 
 const links = [
   { href: '/workspace', label: 'Workspace' },
@@ -23,13 +23,30 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-[var(--rf-border)] bg-[var(--rf-surface)] backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
+      {/* Full-bleed rather than max-w-6xl so the logo sits in the actual
+          top-left corner instead of being inset by the centred container. */}
+      <div className="flex h-16 w-full items-center justify-between gap-4 px-4 sm:px-6">
         <Link
           href="/"
-          className="rf-display text-2xl tracking-tight"
+          className="flex shrink-0 flex-col items-start gap-1"
           aria-label="ResearchForge home"
         >
-          ResearchForge
+          {/* Cropped to the mark + wordmark. The tagline below is real text,
+              not part of the image: baked in it would be ~4px tall here, and
+              its near-black ink would vanish against the dark theme. The 8px
+              size with 0.18em tracking makes it span roughly the same width as
+              the 32px-tall wordmark, so the two line up. */}
+          <Image
+            src="/logo-wordmark.png"
+            alt="ResearchForge"
+            width={1660}
+            height={290}
+            priority
+            className="h-8 w-auto"
+          />
+          <span className="hidden text-[8px] font-medium uppercase leading-none tracking-[0.18em] text-[var(--rf-muted)] sm:block">
+            Discover · Analyze · Innovate
+          </span>
         </Link>
         <nav className="hidden items-center gap-1 md:flex" aria-label="Primary">
           {links.map((link) => (
@@ -68,8 +85,9 @@ export function SiteHeader() {
             </>
           ) : null}
         </nav>
+        {/* No theme toggle: ThemeProvider runs with defaultTheme="system" and
+            enableSystem, so the theme follows each visitor's OS preference. */}
         <div className="hidden items-center gap-2 md:flex">
-          <ThemeToggle />
           {loading ? null : user ? (
             <>
               <span className="max-w-[10rem] truncate text-sm text-[var(--rf-muted)]">
@@ -169,7 +187,6 @@ export function SiteHeader() {
                 </Link>
               </>
             )}
-            <ThemeToggle />
           </nav>
         </div>
       ) : null}
