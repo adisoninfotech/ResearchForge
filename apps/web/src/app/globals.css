@@ -1,39 +1,52 @@
 @import 'tailwindcss';
 
+/* "Clay" palette — warm neutral surfaces with a brick accent.
+ *
+ * The theme was previously green (#0f6a56), which sits near-complementary to
+ * the crimson logo: the two fought wherever they met. The accent here is
+ * drifted from the logo's #a11235 toward brick, because true crimson on a
+ * button reads as an error state rather than a primary action.
+ *
+ * Saturation is confined to the accent. Backgrounds stay neutral so the logo
+ * is the only strongly coloured thing on screen. */
 :root {
-  --rf-bg: #f3efe6;
-  --rf-fg: #14201c;
-  --rf-muted: #4d5c55;
-  --rf-surface: rgba(255, 252, 246, 0.88);
-  --rf-surface-2: #e7efe8;
-  --rf-surface-3: #d7e4da;
-  --rf-border: #b7c7bc;
-  --rf-accent: #0f6a56;
-  --rf-accent-fg: #f7fff9;
-  --rf-danger: #a1262f;
+  --rf-bg: #faf9f8;
+  --rf-fg: #1c1714;
+  --rf-muted: #6b615b;
+  --rf-surface: rgba(255, 255, 255, 0.92);
+  --rf-surface-2: #f3f0ee;
+  --rf-surface-3: #e7e2de;
+  --rf-border: #ded8d4;
+  --rf-accent: #9c3b32;
+  --rf-accent-fg: #fffaf8;
+  /* Distinct enough from the brick accent that a destructive action does not
+     look like a primary one. */
+  --rf-danger: #b3261e;
   --rf-hero:
-    radial-gradient(circle at 20% 20%, #d9efe4 0%, transparent 42%),
-    radial-gradient(circle at 80% 0%, #f0e2c8 0%, transparent 36%),
-    linear-gradient(160deg, #f7f2e8 0%, #e5eee8 48%, #d7e7df 100%);
+    radial-gradient(circle at 15% 12%, rgb(156 59 50 / 0.07) 0%, transparent 46%),
+    radial-gradient(circle at 85% 0%, rgb(180 120 70 / 0.06) 0%, transparent 40%),
+    linear-gradient(170deg, #ffffff 0%, #faf9f8 55%, #f4f1ef 100%);
   --font-display: 'Fraunces', Georgia, serif;
   --font-sans: 'Source Sans 3', 'Segoe UI', sans-serif;
 }
 
 .dark {
-  --rf-bg: #0d1512;
-  --rf-fg: #e8f2ec;
-  --rf-muted: #9fb2a8;
-  --rf-surface: rgba(18, 28, 24, 0.92);
-  --rf-surface-2: #1a2923;
-  --rf-surface-3: #24352e;
-  --rf-border: #315045;
-  --rf-accent: #3ecf9a;
-  --rf-accent-fg: #062016;
-  --rf-danger: #f07178;
+  --rf-bg: #16110f;
+  --rf-fg: #efe9e5;
+  --rf-muted: #ab9d95;
+  --rf-surface: rgba(33, 26, 23, 0.92);
+  --rf-surface-2: #2a211d;
+  --rf-surface-3: #372c26;
+  --rf-border: #3d312c;
+  /* Lifted well above the light-mode brick: #9c3b32 fails contrast against a
+     dark background. Same hue family, AA-compliant for body text. */
+  --rf-accent: #e8836f;
+  --rf-accent-fg: #2a0f0a;
+  --rf-danger: #f2707a;
   --rf-hero:
-    radial-gradient(circle at 15% 10%, #1d3b31 0%, transparent 40%),
-    radial-gradient(circle at 90% 0%, #3a2d18 0%, transparent 35%),
-    linear-gradient(165deg, #0d1512 0%, #12201a 55%, #0f1a16 100%);
+    radial-gradient(circle at 15% 10%, rgb(232 131 111 / 0.08) 0%, transparent 44%),
+    radial-gradient(circle at 88% 0%, rgb(200 150 100 / 0.05) 0%, transparent 38%),
+    linear-gradient(170deg, #1b1512 0%, #16110f 55%, #120e0c 100%);
 }
 
 @theme inline {
